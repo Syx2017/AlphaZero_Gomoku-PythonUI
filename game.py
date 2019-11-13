@@ -254,8 +254,11 @@ class HumanModelButton(Button):
     def click(self, game, player1, player2):
         if self.enable:
             game.is_selfPlay = False
+            if self.text == "Human First":
+                game.start_player = 0
+            else:
+                game.start_player = 1
             game.reset()
-
             self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[1])
             self.enable = False
             return True
@@ -265,7 +268,6 @@ class HumanModelButton(Button):
         if not self.enable:
             self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
             self.enable = True
-
 
 class Game(object):
     """game server"""
@@ -277,9 +279,10 @@ class Game(object):
         self.screen = pygame.display.set_mode([board.SCREEN_WIDTH, board.SCREEN_HEIGHT])
         self.buttons = []
         # self.buttons.append(StartButton(self.screen, 'Start', board.MAP_WIDTH + 30, 15))
-        self.buttons.append(GiveupButton(self.screen, 'Giveup', board.MAP_WIDTH + 30, BUTTON_HEIGHT + 45))
-        self.buttons.append(AIModelButton(self.screen, "AI", board.MAP_WIDTH + 30, 2 * BUTTON_HEIGHT + 75))
-        self.buttons.append(HumanModelButton(self.screen, "Human", board.MAP_WIDTH + 30, 3 * BUTTON_HEIGHT + 105))
+        self.buttons.append(GiveupButton(self.screen, 'Giveup', board.MAP_WIDTH + 30, 3 * BUTTON_HEIGHT + 105))
+        self.buttons.append(AIModelButton(self.screen, "AI SelfPlay", board.MAP_WIDTH + 30, 2 * BUTTON_HEIGHT + 75))
+        self.buttons.append(HumanModelButton(self.screen, "Human First", board.MAP_WIDTH + 30, 15))
+        self.buttons.append(HumanModelButton(self.screen, "AI First", board.MAP_WIDTH + 30, BUTTON_HEIGHT + 45))
         self.is_play = False
         self.is_end = False
         self.winner = -1
@@ -295,6 +298,7 @@ class Game(object):
         self.board.init_board(self.start_player)  # if start_player == 0 then current player == 1  otherwise
         self.mousePoint = None
         self.is_selfPlay = False
+        self.is_human_first = True
 
 
     def graphic(self, board, player1, player2):
