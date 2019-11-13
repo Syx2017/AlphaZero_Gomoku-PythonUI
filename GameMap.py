@@ -2,28 +2,9 @@ from enum import IntEnum
 
 import pygame
 
-# GAME_VERSION = 'V1.0'
-#
 REC_SIZE = 50  #棋盘中每个方格的边长
 CHESS_RADIUS = REC_SIZE // 2 - 2  #棋子半径
-# CHESS_LEN = 9  #棋盘规模
-# MAP_WIDTH = CHESS_LEN * REC_SIZE  #棋盘宽度
-# MAP_HEIGHT = CHESS_LEN * REC_SIZE  #棋盘高度
-#
-# INFO_WIDTH = 200  #右边显示信息宽度
-# BUTTON_WIDTH = 140  #按钮宽度
-# BUTTON_HEIGHT = 50  #按钮高度
-#
-# SCREEN_WIDTH = MAP_WIDTH + INFO_WIDTH  #整个游戏界面的宽度
-# SCREEN_HEIGHT = MAP_HEIGHT
 
-#
-# class MAP_ENTRY_TYPE(IntEnum):
-#     MAP_EMPTY = 0,
-#     MAP_PLAYER_ONE = 1,
-#     MAP_PLAYER_TWO = 2,
-#     MAP_NONE = 3,  # out of map range
-#
 
 class Map():
     def __init__(self, width, height):
@@ -40,13 +21,6 @@ class Map():
             for x in range(self.width):
                 self.map[y][x] = 0
         self.steps = []
-
-    #改变player下棋顺序
-    # def reverseTurn(self, turn):
-    #     if turn == MAP_ENTRY_TYPE.MAP_PLAYER_ONE:
-    #         return MAP_ENTRY_TYPE.MAP_PLAYER_TWO
-    #     else:
-    #         return MAP_ENTRY_TYPE.MAP_PLAYER_ONE
 
     #寻找落点位置
     def getMapUnitRect(self, x, y):
@@ -132,12 +106,3 @@ class Map():
             else:
                 width = 1
             pygame.draw.line(screen, color, start_pos, end_pos, width)
-
-        '''
-        rec_size = 8
-        pos = [(3, 3), (11, 3), (3, 11), (11, 11), (7, 7)]
-        for (x, y) in pos:
-            pygame.draw.rect(screen, color, (
-            REC_SIZE // 2 + x * REC_SIZE - rec_size // 2, REC_SIZE // 2 + y * REC_SIZE - rec_size // 2, rec_size,
-            rec_size))
-        '''

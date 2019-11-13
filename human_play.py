@@ -83,8 +83,12 @@ def run():
         #game.start_self_play(mcts_player, 1)
 
         while True:
+            if game.is_selfPlay:
             #game.start_play()
-            game.start_self_play_show(mcts_player, 1)
+                game.start_self_play_show(mcts_player, 1)
+            else:
+                game.start_play()
+
             pygame.display.update()
 
             for event in pygame.event.get():

@@ -190,7 +190,6 @@ class StartButton(Button):
         if self.enable:
             game.reset()
             # game.start_play(player1, player2)
-            print("clicked")
             # game.winner = None
             self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[1])
             self.enable = False
@@ -227,6 +226,47 @@ class GiveupButton(Button):
             self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
             self.enable = True
 
+
+class AIModelButton(Button):
+    def __init__(self, screen, text, x, y):
+        super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], True)
+
+    def click(self, game, player1, player2):
+        if self.enable:
+            game.is_selfPlay = True
+            game.reset()
+
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[1])
+            self.enable = False
+            return True
+        return False
+
+    def unclick(self):
+        if not self.enable:
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
+            self.enable = True
+
+
+class HumanModelButton(Button):
+    def __init__(self, screen, text, x, y):
+        super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], True)
+
+    def click(self, game, player1, player2):
+        if self.enable:
+            game.is_selfPlay = False
+            game.reset()
+
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[1])
+            self.enable = False
+            return True
+        return False
+
+    def unclick(self):
+        if not self.enable:
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
+            self.enable = True
+
+
 class Game(object):
     """game server"""
 
@@ -236,10 +276,12 @@ class Game(object):
         self.map = Map(self.board.width, self.board.height)
         self.screen = pygame.display.set_mode([board.SCREEN_WIDTH, board.SCREEN_HEIGHT])
         self.buttons = []
-        self.buttons.append(StartButton(self.screen, 'Start', board.MAP_WIDTH + 30, 15))
+        # self.buttons.append(StartButton(self.screen, 'Start', board.MAP_WIDTH + 30, 15))
         self.buttons.append(GiveupButton(self.screen, 'Giveup', board.MAP_WIDTH + 30, BUTTON_HEIGHT + 45))
-        self.is_end = False
+        self.buttons.append(AIModelButton(self.screen, "AI", board.MAP_WIDTH + 30, 2 * BUTTON_HEIGHT + 75))
+        self.buttons.append(HumanModelButton(self.screen, "Human", board.MAP_WIDTH + 30, 3 * BUTTON_HEIGHT + 105))
         self.is_play = False
+        self.is_end = False
         self.winner = -1
         self.player1 = player1
         self.player2 = player2
@@ -252,6 +294,7 @@ class Game(object):
 
         self.board.init_board(self.start_player)  # if start_player == 0 then current player == 1  otherwise
         self.mousePoint = None
+        self.is_selfPlay = False
 
 
     def graphic(self, board, player1, player2):
