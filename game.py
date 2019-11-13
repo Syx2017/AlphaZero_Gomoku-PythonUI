@@ -406,13 +406,14 @@ class Game(object):
         self.gui()
         pygame.display.update()  # pygame update
         current_player = self.board.get_current_player()
-        move, move_probs = self.player2.get_action(self.board,
-                                             temp=temp,
-                                             return_prob=1)
-        location = self.board.move_to_location(move)
-        self.map.click(location[0], location[1], current_player)
-        self.board.do_move(move)
-        self.is_end, self.winner = self.board.game_end()
+        if self.is_play and not self.is_end:
+            move, move_probs = self.player2.get_action(self.board,
+                                                 temp=temp,
+                                                 return_prob=1)
+            location = self.board.move_to_location(move)
+            self.map.click(location[0], location[1], current_player)
+            self.board.do_move(move)
+            self.is_end, self.winner = self.board.game_end()
         if self.is_end:
             self.buttons[0].enable = True
 

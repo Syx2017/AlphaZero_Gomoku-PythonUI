@@ -80,8 +80,8 @@ class Map():
 
     #画棋子
     def drawChess(self, screen):
-        player_one = (255, 251, 240)
-        player_two = (88, 87, 86)
+        player_one = (255, 251, 240)  # player1 on white color
+        player_two = (88, 87, 86)  # player2 on gray color
         player_color = [player_one, player_two]   #棋子颜色
 
         font = pygame.font.SysFont(None, REC_SIZE * 2 // 3)  #定义字体
