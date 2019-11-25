@@ -186,7 +186,7 @@ class StartButton(Button):
     def __init__(self, screen, text, x, y):
         super().__init__(screen, text, x, y, [(26, 173, 25), (158, 217, 157)], True)
 
-    def click(self, game, player1, player2):
+    def click(self, game):
         if self.enable:
             game.reset()
             # game.start_play(player1, player2)
@@ -206,7 +206,7 @@ class GiveupButton(Button):
     def __init__(self, screen, text, x, y):
         super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], False)
 
-    def click(self, game, player1, player2):
+    def click(self, game):
         if self.enable:
             game.winner = (
             game.board.players[0] if game.board.current_player == game.board.players[1]
@@ -231,7 +231,7 @@ class AIModelButton(Button):
     def __init__(self, screen, text, x, y):
         super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], True)
 
-    def click(self, game, player1, player2):
+    def click(self, game):
         if self.enable:
             game.is_selfPlay = True
             game.reset()
@@ -251,7 +251,7 @@ class HumanModelButton(Button):
     def __init__(self, screen, text, x, y):
         super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], True)
 
-    def click(self, game, player1, player2):
+    def click(self, game):
         if self.enable:
             game.is_selfPlay = False
             if self.text == "Human First":
@@ -269,10 +269,37 @@ class HumanModelButton(Button):
             self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
             self.enable = True
 
+
+class ComplexityButton(Button):
+    def __init__(self, screen, text, x, y):
+        super().__init__(screen, text, x, y, [(230, 67, 64), (236, 139, 137)], True)
+
+    def click(self, game):
+        if self.enable:
+            if self.text == "Hard":
+                game.swap_player()
+
+                self.text = "Easy"
+            else:
+                game.swap_player()
+                self.text = "Hard"
+
+            game.reset()
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[1])
+            #self.enable = False
+            return True
+        return False
+
+    def unclick(self):
+        if not self.enable:
+            self.msg_image = self.font.render(self.text, True, self.text_color, self.button_color[0])
+            self.enable = True
+
+
 class Game(object):
     """game server"""
 
-    def __init__(self, board, player1, player2, start_player=0, is_shown=1, **kwargs):
+    def __init__(self, board, player1, player2, player3, start_player=0, is_shown=1, **kwargs):
         self.board = board
         pygame.init()
         self.map = Map(self.board.width, self.board.height)
@@ -283,11 +310,13 @@ class Game(object):
         self.buttons.append(AIModelButton(self.screen, "AI SelfPlay", board.MAP_WIDTH + 30, 2 * BUTTON_HEIGHT + 75))
         self.buttons.append(HumanModelButton(self.screen, "Human First", board.MAP_WIDTH + 30, 15))
         self.buttons.append(HumanModelButton(self.screen, "AI First", board.MAP_WIDTH + 30, BUTTON_HEIGHT + 45))
+        self.buttons.append(ComplexityButton(self.screen, "Easy", board.MAP_WIDTH + 30, 4 * BUTTON_HEIGHT + 135))
         self.is_play = False
         self.is_end = False
         self.winner = -1
-        self.player1 = player1
-        self.player2 = player2
+        self.player1 = player1  # human player
+        self.player2 = player2  # AI player1
+        self.player3 = player3  # AI player2
         self.start_player = start_player
         self.is_shown = is_shown
         p1, p2 = self.board.players
@@ -346,8 +375,6 @@ class Game(object):
             if self.map.isEmpty(x, y):
                 self.mousePoint = (x, y)
 
-
-
     def check_buttons(self, mouse_x, mouse_y):
         for button in self.buttons:
             if button.rect.collidepoint(mouse_x, mouse_y):
@@ -355,7 +382,7 @@ class Game(object):
                 break
 
     def click_button(self, button):
-        if button.click(self, self.player1, self.player2):
+        if button.click(self):
             for tmp in self.buttons:
                 if tmp != button:
                     tmp.unclick()
@@ -379,13 +406,21 @@ class Game(object):
         showfont(self.screen, str, self.board.MAP_WIDTH + 25, self.board.SCREEN_HEIGHT - 60, 30)
         pygame.mouse.set_visible(True)
 
-
     def reset(self):
         self.is_play = True
         self.is_end = False
         self.board.init_board(self.start_player)
         self.map.reset()
 
+    def swap_player(self):
+        temp = self.player2
+        self.player2 = self.player3
+        self.player3 = temp
+
+        p1, p2 = self.board.players
+        self.player1.set_player_ind(p1)
+        self.player2.set_player_ind(p2)
+        self.players = {p1: self.player1, p2: self.player2}
 
     def start_play(self):
         """start a game between two players"""
